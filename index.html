@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An interactive pocket periodic table of elements.">
+    <title>Pocket Periodic Table of Elements</title>
+    <link rel="icon" type="image/png" href="assets/dppte-logo.png">
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<div id="temperatureAtmosphere" aria-hidden="true"></div>
+    <div id="temperatureThermometer" aria-live="polite"></div>
+
+    <!-- App Loading Screen -->
+    <div id="appLoadingScreen" aria-label="Loading Pocket Periodic Table of Elements">
+        <img class="loading-logo" src="assets/dppte-logo.png" alt="Pocket Periodic Table of Elements logo">
+        <div class="loading-credit">BY Fernando</div>
+        <div class="loading-subtitle">Pocket Periodic Table of Elements</div>
+        <div class="loading-bar" aria-hidden="true">
+            <div class="loading-bar-fill"></div>
+        </div>
+        <div class="loading-status" id="loadingStatus">INITIALIZING...</div>
+    </div>
+
+
+    <!-- Chemistry Background Graphics -->
+    <div class="chemistry-bg">
+        <!-- Floating molecules -->
+        <div class="molecule molecule-1">
+            <svg width="80" height="60" viewBox="0 0 80 60">
+                <!-- Water molecule H2O -->
+                <circle cx="40" cy="30" r="12" fill="#e74c3c" opacity="0.8"/>
+                <circle cx="20" cy="15" r="6" fill="#3498db" opacity="0.8"/>
+                <circle cx="60" cy="15" r="6" fill="#3498db" opacity="0.8"/>
+                <line x1="40" y1="30" x2="20" y2="15" stroke="white" stroke-width="2"/>
+                <line x1="40" y1="30" x2="60" y2="15" stroke="white" stroke-width="2"/>
+                <text x="40" y="35" text-anchor="middle" fill="white" font-size="8">H₂O</text>
+            </svg>
+        </div>
+        
+        <div class="molecule molecule-2">
+            <svg width="100" height="60" viewBox="0 0 100 60">
+                <!-- CO2 molecule -->
+                <circle cx="50" cy="30" r="10" fill="#2c3e50" opacity="0.8"/>
+                <circle cx="25" cy="30" r="8" fill="#e74c3c" opacity="0.8"/>
+                <circle cx="75" cy="30" r="8" fill="#e74c3c" opacity="0.8"/>
+                <line x1="50" y1="30" x2="25" y2="30" stroke="white" stroke-width="2"/>
+                <line x1="50" y1="30" x2="75" y2="30" stroke="white" stroke-width="2"/>
+                <text x="50" y="50" text-anchor="middle" fill="white" font-size="8">CO₂</text>
+            </svg>
+        </div>
+        
+        <div class="molecule molecule-3">
+            <svg width="90" height="80" viewBox="0 0 90 80">
+                <!-- Methane CH4 -->
+                <circle cx="45" cy="40" r="10" fill="#2c3e50" opacity="0.8"/>
+                <circle cx="45" cy="20" r="5" fill="#3498db" opacity="0.8"/>
+                <circle cx="45" cy="60" r="5" fill="#3498db" opacity="0.8"/>
+                <circle cx="25" cy="40" r="5" fill="#3498db" opacity="0.8"/>
+                <circle cx="65" cy="40" r="5" fill="#3498db" opacity="0.8"/>
+                <line x1="45" y1="40" x2="45" y2="20" stroke="white" stroke-width="2"/>
+                <line x1="45" y1="40" x2="45" y2="60" stroke="white" stroke-width="2"/>
+                <line x1="45" y1="40" x2="25" y2="40" stroke="white" stroke-width="2"/>
+                <line x1="45" y1="40" x2="65" y2="40" stroke="white" stroke-width="2"/>
+                <text x="45" y="75" text-anchor="middle" fill="white" font-size="8">CH₄</text>
+            </svg>
+        </div>
+        
+        <div class="molecule molecule-4">
+            <svg width="120" height="60" viewBox="0 0 120 60">
+                <!-- Benzene ring -->
+                <polygon points="60,15 80,25 80,45 60,55 40,45 40,25" fill="none" stroke="white" stroke-width="2" opacity="0.8"/>
+                <circle cx="60" cy="15" r="4" fill="#2c3e50" opacity="0.8"/>
+                <circle cx="80" cy="25" r="4" fill="#2c3e50" opacity="0.8"/>
+                <circle cx="80" cy="45" r="4" fill="#2c3e50" opacity="0.8"/>
+                <circle cx="60" cy="55" r="4" fill="#2c3e50" opacity="0.8"/>
+                <circle cx="40" cy="45" r="4" fill="#2c3e50" opacity="0.8"/>
+                <circle cx="40" cy="25" r="4" fill="#2c3e50" opacity="0.8"/>
+                <text x="60" y="35" text-anchor="middle" fill="white" font-size="8">C₆H₆</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Animated atom in corner -->
+    <div class="atom-animation">
+        <div class="nucleus"></div>
+        <div class="electron-orbit orbit-1">
+            <div class="electron electron-1"></div>
+        </div>
+        <div class="electron-orbit orbit-2">
+            <div class="electron electron-2"></div>
+        </div>
+        <div class="electron-orbit orbit-3">
+            <div class="electron electron-3"></div>
+        </div>
+    </div>
+
+    <!-- Chemical reaction animation -->
+    <div class="reaction-animation">
+        <div class="reaction-text">2H₂ + O₂ → 2H₂O</div>
+    </div>
+
+    <!-- Lab equipment -->
+    <div class="lab-equipment">
+        <svg width="100" height="120" viewBox="0 0 100 120">
+            <!-- Erlenmeyer flask -->
+            <path d="M35 20 L35 40 L15 80 L85 80 L65 40 L65 20 Z" 
+                  fill="none" stroke="white" stroke-width="2" opacity="0.6"/>
+            <!-- Flask neck -->
+            <rect x="40" y="10" width="20" height="15" 
+                  fill="none" stroke="white" stroke-width="2" opacity="0.6"/>
+            <!-- Liquid -->
+            <path d="M20 75 L80 75 L75 70 L25 70 Z" 
+                  fill="rgba(52, 152, 219, 0.3)"/>
+            <!-- Bubbles -->
+            <circle cx="35" cy="65" r="2" fill="rgba(255, 255, 255, 0.4)">
+                <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="55" cy="68" r="1.5" fill="rgba(255, 255, 255, 0.4)">
+                <animate attributeName="r" values="1.5;3;1.5" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="45" cy="62" r="1" fill="rgba(255, 255, 255, 0.4)">
+                <animate attributeName="r" values="1;2.5;1" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            
+            <!-- Test tube -->
+            <rect x="75" y="30" width="8" height="40" rx="4" 
+                  fill="none" stroke="white" stroke-width="1.5" opacity="0.6"/>
+            <rect x="76" y="60" width="6" height="8" 
+                  fill="rgba(231, 76, 60, 0.4)"/>
+        </svg>
+    </div>
+
+    <!-- DNA Helix -->
+    <div class="dna-helix">
+        <div class="helix-strand"></div>
+    </div>
+
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+
+
+
+    <!-- DPPTE Navigation Drawer -->
+    <button class="dppte-menu-trigger" id="dppteMenuTrigger" type="button"
+            aria-label="Open DPPTE menu" aria-controls="dppteMenuDrawer" aria-expanded="false"
+            onclick="toggleDppteMenu()">☰</button>
+
+    <div class="dppte-menu-backdrop" id="dppteMenuBackdrop" aria-hidden="true" onclick="closeDppteMenu()"></div>
+
+    <aside class="dppte-menu-drawer" id="dppteMenuDrawer" aria-label="DPPTE main navigation" aria-hidden="true">
+        <div class="dppte-menu-head">
+            <div class="dppte-menu-brand">
+                <div class="dppte-menu-brand-mark" aria-hidden="true">⚛</div>
+                <div>
+                    <h2 class="dppte-menu-title">DPPTE</h2>
+                    <p class="dppte-menu-subtitle">Chemistry Learning Tool</p>
+                </div>
+            </div>
+            <button class="dppte-menu-close" type="button" aria-label="Close DPPTE menu" onclick="closeDppteMenu()">×</button>
+        </div>
+
+        <div class="dppte-menu-scroll">
+            <nav class="dppte-main-nav" aria-label="Main navigation">
+                <button class="dppte-menu-home dppte-nav-action is-active" type="button" data-nav="home" onclick="dppteNavigate('home')">
+                    <span class="dppte-menu-home-icon" aria-hidden="true">⌂</span>
+                    <span>HOME</span>
+                </button>
+
+                <div class="dppte-menu-group">
+                    <div class="dppte-menu-section-label">🔬 &nbsp;EXPLORE</div>
+                    <div class="dppte-menu-sublist">
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="periodic" onclick="dppteNavigate('periodic')">
+                            <span class="dppte-subitem-icon">▦</span><span>Periodic Table</span>
+                        </button>
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="finder" onclick="dppteNavigate('finder')">
+                            <span class="dppte-subitem-icon">⌕</span><span>Element Finder</span>
+                        </button>
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="categories" onclick="dppteNavigate('categories')">
+                            <span class="dppte-subitem-icon">◈</span><span>Categories</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dppte-menu-group">
+                    <div class="dppte-menu-section-label">🧪 &nbsp;SIMULATE</div>
+                    <div class="dppte-menu-sublist">
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="molecule" onclick="dppteNavigate('molecule')">
+                            <span class="dppte-subitem-icon">◉</span><span>Molecule Lab</span>
+                        </button>
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="compound" onclick="dppteNavigate('compound')">
+                            <span class="dppte-subitem-icon">🧪</span><span>Build a Compound</span>
+                        </button>
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="reaction" onclick="dppteNavigate('reaction')">
+                            <span class="dppte-subitem-icon">⚗</span><span>Reaction Builder</span>
+                        </button>
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="bohr" onclick="dppteNavigate('bohr')">
+                            <span class="dppte-subitem-icon">⚛</span><span>Bohr Model</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dppte-menu-group">
+                    <div class="dppte-menu-section-label">🧠 &nbsp;PRACTICE</div>
+                    <div class="dppte-menu-sublist">
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="quiz" onclick="dppteNavigate('quiz')">
+                            <span class="dppte-subitem-icon">?</span><span>Quiz Is It!</span>
+                        </button>
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="challenge" onclick="dppteNavigate('challenge')">
+                            <span class="dppte-subitem-icon">★</span><span>Challenge Mode</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dppte-menu-group">
+                    <div class="dppte-menu-section-label">📖 &nbsp;LEARN</div>
+                    <div class="dppte-menu-sublist">
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="guide" onclick="dppteNavigate('guide')">
+                            <span class="dppte-subitem-icon">☰</span><span>Chemistry Guide</span>
+                        </button>
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="trends" onclick="dppteNavigate('trends')">
+                            <span class="dppte-subitem-icon">↗</span><span>Periodic Trends</span>
+                        </button>
+                        <button class="dppte-menu-subitem dppte-nav-action" type="button" data-nav="reference" onclick="dppteNavigate('reference')">
+                            <span class="dppte-subitem-icon">▤</span><span>Reference</span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="dppte-menu-divider"></div>
+            <div class="dppte-menu-footer-nav">
+                <button class="dppte-menu-footer-item" type="button" onclick="dppteNavigate('settings')"><span>⚙</span> Settings</button>
+                <button class="dppte-menu-footer-item" type="button" onclick="closeDppteMenu();openDppteAbout()"><span>?</span> About</button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="dppte-menu-note" id="dppteMenuNote" role="status" aria-live="polite"></div>
+
+    <!-- DPPTE About / Owner -->
+    <button class="dppte-about-trigger" id="dppteAboutTrigger" type="button"
+            aria-label="About this app" aria-controls="dppteAboutOverlay" aria-expanded="false"
+            onclick="openDppteAbout()">?</button>
+
+    <div class="dppte-about-overlay" id="dppteAboutOverlay" aria-hidden="true"
+         onclick="if(event.target===this)closeDppteAbout()">
+        <section class="dppte-about-modal" role="dialog" aria-modal="true" aria-labelledby="dppteAboutTitle">
+            <header class="dppte-about-head">
+                <div class="dppte-about-head-copy">
+                    <p class="dppte-about-kicker">About This App</p>
+                    <h2 class="dppte-about-title" id="dppteAboutTitle">Digital Pocket Periodic Table of Elements</h2>
+                    <p class="dppte-about-subtitle">DPPTE • Chemistry Learning Tool</p>
+                </div>
+                <button class="dppte-about-close" type="button" aria-label="Close About This App" onclick="closeDppteAbout()">×</button>
+            </header>
+            <div class="dppte-about-body">
+                <article class="dppte-about-card">
+                    <p><strong>Digital Pocket Periodic Table of Elements</strong> was created by <strong>Fernando T. Maruez Jr.</strong>, a Bachelor of Secondary Education graduate majoring in Science.</p>
+                </article>
+
+                <article class="dppte-about-card">
+                    <h3>Educational Purpose</h3>
+                    <p>This application was developed as an educational tool designed to make learning and exploring the periodic table of elements more accessible, interactive, and engaging. It is intended for educational and learning purposes.</p>
+                </article>
+
+                <article class="dppte-about-card">
+                    <h3>Development Status</h3>
+                    <p>The app is still under active development, and its features, design, and content may continue to change and improve over time.</p>
+                </article>
+
+                <article class="dppte-about-card dppte-about-notice">
+                    <h3>Development &amp; Copyright Notice</h3>
+                    <p>Please do not copy, redistribute, reproduce, modify, re-upload, or publicly spread this application or its contents without permission. This project is still being developed, and unauthorized distribution may result in outdated or incomplete versions being circulated. Please respect the creator's work and wait for an official release or permission to share it.</p>
+                </article>
+            </div>
+        </section>
+    </div>
+
+<div class="dppte-bohr-overlay" id="dppteBohrOverlay" aria-hidden="true" onclick="if(event.target===this)closeBohrModel()">
+  <section class="dppte-bohr-modal" role="dialog" aria-modal="true" aria-labelledby="dppteBohrTitle">
+    <header class="dppte-bohr-head">
+      <div class="dppte-bohr-icon" aria-hidden="true">⚛</div>
+      <div><h2 id="dppteBohrTitle">Bohr Model</h2><p>Explore the electron-shell arrangement of an element.</p></div>
+      <button type="button" class="dppte-bohr-close" onclick="closeBohrModel()" aria-label="Close Bohr Model">×</button>
+    </header>
+    <div class="dppte-bohr-body">
+      <main class="dppte-bohr-stage">
+        <div class="dppte-bohr-atom-wrap"><div class="dppte-bohr-atom" id="dppteBohrAtom"></div></div>
+        <div class="dppte-bohr-key"><span><i class="dppte-bohr-dot"></i>Electron</span><span><i class="dppte-bohr-dot v"></i>Valence electron</span></div>
+      </main>
+      <aside class="dppte-bohr-side">
+        <div class="dppte-bohr-search"><input id="dppteBohrSearch" type="search" placeholder="Search element..." autocomplete="off" aria-label="Search element"></div>
+        <div class="dppte-bohr-elements" id="dppteBohrElements"></div>
+        <div class="dppte-bohr-info" id="dppteBohrInfo"></div>
+        <div class="dppte-bohr-controls">
+          <label class="dppte-bohr-control"><span>Show shell labels</span><input id="dppteBohrLabels" type="checkbox" checked></label>
+          <label class="dppte-bohr-control"><span>Animate electrons</span><input id="dppteBohrAnimate" type="checkbox"></label>
+          <label class="dppte-bohr-control"><span>Highlight valence electrons</span><input id="dppteBohrValence" type="checkbox" checked></label>
+        </div>
+      </aside>
+    </div>
+  </section>
+</div>
+    <div class="dppte-compound-overlay" id="dppteCompoundOverlay" aria-hidden="true" onclick="if(event.target===this)closeCompoundBuilder()">
+  <section class="dppte-compound-modal" role="dialog" aria-modal="true" aria-labelledby="dppteCompoundTitle">
+    <header class="dppte-compound-head">
+      <div class="dppte-compound-brand-icon" aria-hidden="true">⚗</div>
+      <div class="dppte-compound-title-wrap">
+        <div class="dppte-compound-kicker">CHEMISTRY LAB</div>
+        <h2 id="dppteCompoundTitle">Build a Compound</h2>
+        <p>Combine elements, adjust quantities, and create chemical compounds!</p>
+      </div>
+      <div class="dppte-compound-head-art" aria-hidden="true"><span>⚗</span><b>●</b><i>+</i></div>
+      <div class="dppte-compound-head-tip"><strong>Try different elements</strong><small>and discover what compounds you can make!</small></div>
+      <button type="button" class="dppte-compound-close" onclick="closeCompoundBuilder()" aria-label="Close Build a Compound">×</button>
+    </header>
+
+    <div class="dppte-compound-body">
+      <section class="dppte-compound-picker">
+        <div class="dppte-compound-step-title"><span class="dppte-step-num">1</span><div><h3>Choose Elements</h3><small>Select up to 4 elements.</small></div><span class="dppte-compound-count" id="dppteCompoundCount">0 / 4</span></div>
+        <div class="dppte-compound-search"><span>⌕</span><input id="dppteCompoundSearch" type="search" placeholder="Search elements (e.g. Hydrogen, Gold...)" autocomplete="off" oninput="filterCompoundElements(this.value)"><button type="button" onclick="clearCompoundSearch()" aria-label="Clear search">×</button></div>
+        <div class="dppte-compound-filters" role="tablist" aria-label="Element categories">
+          <button class="is-active" type="button" data-filter="all" onclick="setCompoundCategory('all',this)">All</button>
+          <button type="button" data-filter="metals" onclick="setCompoundCategory('metals',this)">Metals</button>
+          <button type="button" data-filter="nonmetals" onclick="setCompoundCategory('nonmetals',this)">Nonmetals</button>
+          <button type="button" data-filter="metalloids" onclick="setCompoundCategory('metalloids',this)">Metalloids</button>
+          <button type="button" data-filter="noble-gases" onclick="setCompoundCategory('noble-gases',this)">Noble Gases</button>
+        </div>
+        <div class="dppte-compound-element-grid" id="dppteCompoundElementGrid"></div>
+        <div class="dppte-compound-picker-tip"><span>💡</span><span>Click an element card to add it. Selected cards are highlighted.</span></div>
+      </section>
+
+      <aside class="dppte-compound-right">
+        <section class="dppte-compound-card dppte-your-compound">
+          <div class="dppte-compound-card-title"><span class="dppte-mini-icon">⚗</span><span class="dppte-step-num small">2</span><h3>Your Compound</h3><button class="dppte-compound-clear" type="button" onclick="clearCompoundBuilder()">CLEAR</button></div>
+          <div class="dppte-compound-empty" id="dppteCompoundEmpty">
+            <div class="dppte-empty-flask">⚗</div><strong>No elements selected yet</strong><p>Choose elements from the left to start<br>building your compound.</p>
+          </div>
+          <div class="dppte-compound-selected" id="dppteCompoundSlots"></div>
+          <div class="dppte-compound-formula" id="dppteCompoundFormula"><span>—</span></div>
+        </section>
+
+        <section class="dppte-compound-card dppte-compound-result-card">
+          <div class="dppte-compound-card-title"><span class="dppte-mini-icon purple">⚛</span><span class="dppte-step-num small">3</span><h3>Compound Result</h3></div>
+          <div class="dppte-result-grid">
+            <div><small>Formula</small><strong id="dppteResultFormula">—</strong></div>
+            <div><small>Name</small><strong id="dppteResultName">—</strong></div>
+          </div>
+          <div class="dppte-result-message" id="dppteCompoundResult" aria-live="polite"><span>ⓘ</span><p>Select elements and adjust quantities<br>to see the compound result here.</p></div>
+        </section>
+      </aside>
+    </div>
+
+    <section class="dppte-compound-examples">
+      <div class="dppte-examples-title"><span>⚛</span><div><strong>Quick Examples</strong><small>Try these common compounds:</small></div></div>
+      <button type="button" onclick="loadCompoundExample([1,8],[2,1])"><strong>H₂O</strong><small>Water</small></button>
+      <button type="button" onclick="loadCompoundExample([6,8],[1,2])"><strong>CO₂</strong><small>Carbon dioxide</small></button>
+      <button type="button" onclick="loadCompoundExample([11,17],[1,1])"><strong>NaCl</strong><small>Sodium chloride</small></button>
+      <button type="button" onclick="loadCompoundExample([7,1],[1,3])"><strong>NH₃</strong><small>Ammonia</small></button>
+      <button type="button" onclick="loadCompoundExample([6,1],[1,4])"><strong>CH₄</strong><small>Methane</small></button>
+    </section>
+
+    <footer class="dppte-compound-foot"><span>💡 Tip: You can select up to 4 elements to create a compound.</span><button class="dppte-compound-build" type="button" onclick="buildCompound()">⚗ BUILD COMPOUND</button></footer>
+  </section>
+</div>
+
+
+
+    <div class="dppte-molecule-overlay" id="dppteMoleculeOverlay" aria-hidden="true" onclick="if(event.target===this)closeMoleculeSimulation()">
+        <section class="dppte-molecule-modal" role="dialog" aria-modal="true" aria-labelledby="dppteMoleculeTitle">
+            <header class="dppte-molecule-head">
+                <div><div class="dppte-molecule-kicker">INTERACTIVE LAB</div><h2 id="dppteMoleculeTitle">🧬 Molecule Simulation</h2><p>See how temperature changes particle motion and the state of water.</p></div>
+                <button type="button" class="dppte-molecule-close" onclick="closeMoleculeSimulation()" aria-label="Close molecule simulation">×</button>
+            </header>
+            <div class="dppte-molecule-body">
+                <div class="dppte-molecule-toolbar">
+                    <div class="dppte-molecule-select-wrap"><label for="dppteParticleType">PARTICLE TYPE</label><select id="dppteParticleType" onchange="setMoleculeType(this.value)"><option value="gas">Gas particles</option><option value="water">Water molecules (H₂O)</option></select></div>
+                    <div class="dppte-molecule-state"><span>OBSERVED STATE</span><strong id="dppteMoleculeState">Gas</strong></div>
+                </div>
+                <div class="dppte-molecule-stage-wrap">
+                    <div class="dppte-molecule-stage-label"><span>PARTICLE CHAMBER</span><span id="dppteMoleculeMotion">Random motion</span></div>
+                    <div class="dppte-molecule-stage"><canvas id="dppteMoleculeCanvas" aria-label="Animated particle chamber"></canvas><div class="dppte-molecule-empty-label" id="dppteMoleculeCaption">Particles move freely throughout the container.</div></div>
+                </div>
+                <div class="dppte-molecule-temp-panel">
+                    <div class="dppte-molecule-temp-top"><label for="dppteMoleculeTemp">TEMPERATURE</label><strong id="dppteMoleculeTempValue">25°C</strong></div>
+                    <input id="dppteMoleculeTemp" type="range" min="-50" max="150" step="1" value="25" oninput="updateMoleculeSimulation()">
+                    <div class="dppte-molecule-scale"><span>−50°C · Colder</span><span>150°C · Hotter</span></div>
+                </div>
+                <div class="dppte-molecule-insight" aria-live="polite"><span class="dppte-molecule-insight-icon" id="dppteMoleculeInsightIcon">💨</span><div><strong id="dppteMoleculeInsightTitle">Particles are moving</strong><p id="dppteMoleculeInsightText">Gas particles move freely and spread through the container.</p></div></div>
+                <p class="dppte-molecule-footnote">Illustrative particle model. Water phase changes are shown at approximately 0°C and 100°C at normal atmospheric pressure.</p>
+            </div>
+        </section>
+    </div>
+
+
+    <div class="goofy-mascot" id="goofyMascot" title="Click the scientist for a chemistry pep talk" role="button" tabindex="0" aria-label="Chemistry mascot">
+        <div class="mascot-bubble" id="mascotBubble" aria-live="polite">Pick an element! I promise the atoms won't bite. 🧪</div>
+        <img class="mascot-image" src="assets/scientist-mascot.png" alt="Cute chibi scientist mascot with red hair and a white lab coat">
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="app-header-brand">
+                <img class="app-header-logo" src="assets/dppte-logo.png" alt="App logo">
+                <h1>Pocket Periodic Table of Elements</h1>
+            </div>
+        </div>
+
+        <div id="mainPage">
+            <div class="controls">
+                <div class="category-group">
+                    <h4>Basic Classification:</h4>
+                    <button class="category-btn metals" onclick="highlightCategory('metals')">Metals</button>
+                    <button class="category-btn nonmetals" onclick="highlightCategory('nonmetals')">Nonmetals</button>
+                </div>
+
+                <div class="category-group">
+                    <h4>Metal Groups:</h4>
+                    <button class="category-btn alkali-metals" onclick="highlightCategory('alkali-metals')">Alkali Metals</button>
+                    <button class="category-btn alkaline-earth" onclick="highlightCategory('alkaline-earth')">Alkaline Earth</button>
+                    <button class="category-btn transition-metals" onclick="highlightCategory('transition-metals')">Transition Metals</button>
+                    <button class="category-btn poor-metals" onclick="highlightCategory('poor-metals')">Poor Metals</button>
+                    <button class="category-btn metalloids" onclick="highlightCategory('metalloids')">Metalloids</button>
+                </div>
+
+                <div class="category-group">
+                    <h4>Nonmetal Groups:</h4>
+                    <button class="category-btn halogens" onclick="highlightCategory('halogens')">Halogens</button>
+                    <button class="category-btn noble-gases" onclick="highlightCategory('noble-gases')">Noble Gases</button>
+                </div>
+
+                <div class="category-group">
+                    <h4>Other Groups:</h4>
+                    <button class="category-btn lanthanides" onclick="highlightCategory('lanthanides')">Lanthanides</button>
+                    <button class="category-btn actinides" onclick="highlightCategory('actinides')">Actinides</button>
+                </div>
+
+                <div class="category-group special-classifications">
+                    <h4>Special Element Classifications:</h4>
+                    <button class="category-btn coinage-metals" onclick="highlightClassification('coinage-metals')" title="Cu, Ag, Au — Metals historically used for coins">Coinage Metals</button>
+                    <button class="category-btn platinum-group" onclick="highlightClassification('platinum-group')" title="Ru, Rh, Pd, Os, Ir, Pt — Valuable transition metals with similar properties">Platinum Group Metals</button>
+                    <button class="category-btn chalcogens" onclick="highlightClassification('chalcogens')" title="O, S, Se, Te, Po, Lv — Group 16">Chalcogens</button>
+                    <button class="category-btn pnictogens" onclick="highlightClassification('pnictogens')" title="N, P, As, Sb, Bi, Mc — Group 15">Pnictogens</button>
+                    <button class="category-btn carbon-group" onclick="highlightClassification('carbon-group')" title="C, Si, Ge, Sn, Pb, Fl — Group 14">Carbon Group / Tetrels</button>
+                    <button class="category-btn boron-group" onclick="highlightClassification('boron-group')" title="B, Al, Ga, In, Tl, Nh — Group 13">Boron Group</button>
+                    <div class="classification-note">Click a classification to highlight its elements on the periodic table.</div>
+                </div>
+
+                <div class="category-group">
+                    <h4>Periodic Trends:</h4>
+                    <button class="category-btn" style="background: #e74c3c;" onclick="showTrend('electronegativity')">Electronegativity</button>
+                    <button class="category-btn" style="background: #9b59b6;" onclick="showTrend('atomic-radius')">Atomic Radius</button>
+                    <button class="category-btn" style="background: #3498db;" onclick="showTrend('ionization')">Ionization Energy</button>
+                    <button class="category-btn" style="background: #e67e22;" onclick="showTrend('boiling-point')">Boiling Point</button>
+                    <button class="category-btn" style="background: #27ae60;" onclick="showTrend('density')">Density</button>
+                    <button class="category-btn" style="background: #f39c12;" onclick="showTrend('melting-point')">Melting Point</button>
+                    <button class="category-btn" style="background: #16a085;" onclick="showTrend('electron-affinity')">Electron Affinity</button>
+                    <button class="category-btn" style="background: #8e44ad;" onclick="showTrend('metallicity')">Metallicity</button>
+                </div>
+
+                <div class="category-group trend-arrow-controls">
+                    <button class="category-btn" style="background: #34495e;" onclick="clearAll()">Clear All</button>
+                    <button class="category-btn trend-arrow-toggle" style="background: #2c3e50;" onclick="toggleTrendArrows()" id="arrowToggle">↗ Show Trend Arrows</button>
+                </div>
+
+                <div class="temperature-control">
+                    <label>Temperature Control:</label>
+                    <input type="range" class="temp-slider" min="-273" max="3000" value="25" id="tempSlider" oninput="updateTemperature(this.value)">
+                    <span id="tempDisplay">25°C</span>
+                    <button onclick="toggleTemperatureMode()" id="tempToggle">Show States</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <!-- Period labels -->
+                    <div class="period-labels">
+                        <div class="period-label">1</div>
+                        <div class="period-label">2</div>
+                        <div class="period-label">3</div>
+                        <div class="period-label">4</div>
+                        <div class="period-label">5</div>
+                        <div class="period-label">6</div>
+                        <div class="period-label">7</div>
+                        <div class="period-label"></div>
+                        <div class="period-label"></div>
+                        <div class="period-label"></div>
+                    </div>
+
+                    <!-- Periodic table -->
+                    <div class="periodic-table" id="periodicTable"></div>
+                </div>
+
+                <!-- Trend arrows -->
+                <div class="trend-arrows" id="trendArrows" style="display: none;">
+                    <!-- Horizontal arrows for period trends -->
+                    <div class="trend-guide-title" id="trendGuideTitle">PERIODIC TREND GUIDE</div>
+                    <div class="arrow horizontal-arrow" id="horizontalArrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-head"></div>
+                        <div class="arrow-label" id="horizontalLabel">Trend →</div>
+                    </div>
+                    
+                    <!-- Vertical arrows for group trends -->
+                    <div class="arrow vertical-arrow" id="verticalArrow">
+                        <div class="arrow-line"></div>
+                        <div class="arrow-head"></div>
+                        <div class="arrow-label" id="verticalLabel">Trend ↓</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="watermark">
+                Created by: BSEd 4-SCIENCE - Fernando T. Marquez Jr., Nicole May Floresca, and Mary Ann Guzman. (2025)
+            </div>
+        </div>
+
+        <div id="quizPage" class="quiz-page">
+            <h2>🧠 Chemistry Quiz Challenge!</h2>
+            <div class="quiz-controls">
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="hard">Hard</option>
+                    <option value="extreme">Extreme</option>
+                </select>
+                <select id="questionCount">
+                    <option value="10">10 Questions</option>
+                    <option value="15">15 Questions</option>
+                    <option value="20">20 Questions</option>
+                </select>
+                <button onclick="startQuiz()">Start Quiz</button>
+                <button onclick="showMain()">Back to Table</button>
+            </div>
+            <div id="quizContent"></div>
+        </div>
+    </div>
+
+    <button class="manual-toggle" id="manualToggle" type="button" onclick="toggleManual()" aria-controls="manual" aria-expanded="false">📖 How to Use</button>
+    <div class="manual" id="manual" role="dialog" aria-modal="false" aria-labelledby="manualTitle">
+        <div class="manual-head">
+            <div>
+                <div class="manual-kicker">DPPTE GUIDE</div>
+                <h3 id="manualTitle">How to Use</h3>
+            </div>
+            <button class="manual-close" type="button" onclick="toggleManual(false)" aria-label="Close How to Use guide">×</button>
+        </div>
+        <div class="manual-scroll">
+            <p class="manual-intro">Explore the Digital Pocket Periodic Table of Elements and use its interactive tools to learn about element groups, periodic trends, atomic structure, temperature states, and chemistry concepts.</p>
+            <ol>
+                <li><strong>Explore the periodic table.</strong> The main screen displays all 118 elements arranged by groups and periods. Each element tile shows its symbol, atomic number, name, and atomic mass. Click an element whenever you want to inspect it more closely.</li>
+                <li><strong>Use the category buttons.</strong> Select a category such as metals, nonmetals, metalloids, transition metals, halogens, noble gases, lanthanides, or actinides to highlight the corresponding elements on the table. This makes it easier to recognize patterns and compare related elements.</li>
+                <li><strong>Try the special classifications.</strong> Use the classification buttons for groups such as Coinage Metals, Platinum Group Metals, Chalcogens, Pnictogens, Carbon Group / Tetrels, and Boron Group. These highlights help you study element families that have special names or shared chemical characteristics.</li>
+                <li><strong>Study periodic trends.</strong> Select a trend such as electronegativity, atomic radius, ionization energy, boiling point, density, melting point, electron affinity, or metallicity. The table will visualize the trend so you can observe how the property changes across periods and down groups.</li>
+                <li><strong>Show trend arrows.</strong> Use the trend-arrow controls to display the directional pattern of the selected periodic property. You can also change the displayed direction when the control is available.</li>
+                <li><strong>Adjust the temperature control.</strong> Move the existing temperature slider to explore how temperature affects the displayed state of elements. Depending on an element's melting and boiling points, its symbol can visually indicate whether it is solid, liquid, or gas at the selected temperature.</li>
+                <li><strong>Open Molecule Simulation.</strong> Open the left-side menu and choose <em>Molecule Simulation</em> to experiment with moving particles. Select gas particles or water molecules, then adjust the simulation temperature to observe changes in particle motion and, for water, changes between solid, liquid, and gas states.</li>
+                <li><strong>View detailed element information.</strong> Click any element tile to open its Element Lab profile. The popup organizes information into sections such as overview, atomic structure, physical properties, chemical properties, and periodic trends.</li>
+                <li><strong>View the atom model.</strong> Inside an element's information popup, choose <em>VIEW ATOM</em> to open the interactive atom visualization. Use it as a visual aid for understanding the element's atomic number and electron-shell arrangement.</li>
+                <li><strong>Read the element story.</strong> Choose <em>ABOUT ELEMENT</em> inside the element popup to flip to the information side. This section provides historical context, discovery information when available, and a short "Did You Know?" fact for the selected element.</li>
+                <li><strong>Take the Chemistry Quiz.</strong> Open the left-side menu and select <em>Quiz Is It!</em> to use the existing quiz system. Choose a difficulty and question count, answer each question, review the feedback, and check your final score and results.</li>
+                <li><strong>Use Clear All when needed.</strong> If several categories, classifications, or trend highlights are active, use <em>Clear All</em> to remove the current highlighting and return the periodic table to its normal view.</li>
+                <li><strong>Use the left-side menu.</strong> The ☰ button opens the DPPTE navigation drawer. From there you can access Quiz Is It!, Molecule Simulation, and future chemistry-learning tools such as Build a Compound, Reaction Builder, and Bohr Model.</li>
+                <li><strong>About the app.</strong> Use the <em>?</em> button in the lower-left corner to read information about DPPTE, its creator, its educational purpose, and the project's development and copyright notice.</li>
+            </ol>
+            <div class="manual-tip"><strong>💡 Learning tip:</strong> Try selecting an element first, then compare its group and period with nearby elements. Next, test a periodic trend and adjust the temperature. Combining these tools makes it easier to see how the periodic table connects element properties, atomic structure, and states of matter.</div>
+        </div>
+    </div>
+
+    <div class="popup" id="popup" role="dialog" aria-modal="true" aria-labelledby="elementPanelName">
+        <div class="popup-content dppte-element-lab" id="popupContent">
+            <div class="dppte-element-flip-face dppte-element-front" id="elementFrontFace">
+            <div class="dppte-element-header" id="elementPanelHeader">
+                <div class="dppte-element-identity">
+                    <div class="dppte-element-symbol-wrap" id="elementPanelSymbolWrap">
+                        <div class="dppte-element-symbol" id="elementPanelSymbol">E</div>
+                    </div>
+                    <div class="dppte-element-heading">
+                        <div class="dppte-element-kicker">ELEMENT PROFILE</div>
+                        <h2 id="elementPanelName">Element</h2>
+                        <div class="dppte-element-subtitle" id="elementPanelMeta">Atomic Number • Category</div>
+                    </div>
+                </div>
+                <button class="dppte-popup-close" type="button" onclick="closePopup()" aria-label="Close element information">&times;</button>
+            </div>
+
+            <div class="dppte-element-scroll" id="elementDetails"></div>
+
+            <div class="dppte-element-actions" id="elementPanelActions">
+                <button type="button" class="dppte-action-primary" onclick="viewElementAtom()">⚛ <span>VIEW ATOM</span></button>
+                <button type="button" onclick="flipElementAbout()">ⓘ <span>ABOUT ELEMENT</span></button>
+            </div>
+            </div>
+
+            <div class="dppte-element-flip-face dppte-element-back" id="elementAboutFace" aria-hidden="true">
+                <div class="dppte-about-header">
+                    <div class="dppte-about-title-wrap">
+                        <div class="dppte-element-kicker">ELEMENT STORY</div>
+                        <h2 id="elementAboutTitle">About the Element</h2>
+                        <div class="dppte-element-subtitle" id="elementAboutMeta">History • Discovery • Trivia</div>
+                    </div>
+                    <button class="dppte-popup-close" type="button" onclick="flipElementAbout(false)" aria-label="Back to element overview">↩</button>
+                </div>
+                <div class="dppte-about-scroll" id="elementAboutContent"></div>
+                <div class="dppte-element-actions dppte-about-actions">
+                    <button type="button" class="dppte-action-primary" onclick="flipElementAbout(false)">← <span>BACK TO OVERVIEW</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+
+
+
+
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>
